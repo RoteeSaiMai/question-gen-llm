@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  gemma:
+    image: ghcr.io/ollama/gemma:2b
+    ports:
+      - "11434:11434"
+    restart: always
+    environment:
+      - OLLAMA_API_BASE_URL=http://127.0.0.1:11434/api
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "3600:8000"
+    volumes:
+      - open-webui:/app/backend/data
+    restart: always
+    depends_on:
+      - gemma
+    environment:
+      - OLLAMA_API_BASE_URL=http://gemma:11434/api
+volumes:
+  open-webui:
