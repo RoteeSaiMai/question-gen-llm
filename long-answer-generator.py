@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#คำถามแบบยาวมีหลายคะแนนต่อข้อ
+#คำถามแบบยาวมีหลายคะแนนต่อข้อ ข้อที่ถามไม่ได้ต่อกัน
 import ollama
 import json
 import re
@@ -34,7 +34,7 @@ def generate_question_prompt(previous_questions, text):
 
     return prompt
 
-def evaluate_response_prompt(question, user_response, previous_evaluations, text):
+def evaluate_response_prompt(question, user_response, text):
     """
     Generates a prompt for evaluating the user's response to a well-structured question.
     The evaluation should follow strict principles for assessment, providing clear reasoning and constructive feedback.
@@ -116,7 +116,7 @@ def ask_open_ended_questions(num_questions, initial_text):
         user_response = input(f"Question {i + 1}: {new_question}\nYour response: ")
 
         # Evaluate the response
-        evaluation_prompt = evaluate_response_prompt(new_question, user_response, previous_evaluations, initial_text)
+        evaluation_prompt = evaluate_response_prompt(new_question, user_response, initial_text)
         evaluation_response = ollama.generate(model="llama3", prompt=evaluation_prompt, stream=True)
         evaluation_text = "".join([chunk["response"] for chunk in evaluation_response])
      #    print(f"Evaluation text: {evaluation_text}")
