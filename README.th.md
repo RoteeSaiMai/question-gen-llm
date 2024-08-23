@@ -1,7 +1,7 @@
 # การสร้างคำถามด้วย LLM
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/RoteeSaiMai/adaptive-quiz/blob/main/README.md)
-[![th](https://img.shields.io/badge/lang-th-blue.svg)](https://github.com/RoteeSaiMai/adaptive-quiz/blob/main/readme/README.th.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/RoteeSaiMai/question-gen-llm/blob/main/README.md)
+[![th](https://img.shields.io/badge/lang-th-blue.svg)](https://github.com/RoteeSaiMai/question-gen-llm/blob/main/readme/README.th.md)
 
 โปรเจกต์นี้เป็นระบบสอบปรับระดับความยากตามผู้ใช้งาน ออกแบบมาเพื่อสร้างและประเมินเนื้อหาการสอบตามการโต้ตอบของผู้ใช้ ระบบนี้ผสานรวมกับ API ที่ประมวลผลข้อมูลจากผู้ใช้ และปรับความยากของคำถามตามผลการตอบของผู้ใช้แต่ละคน
 

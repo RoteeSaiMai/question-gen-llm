@@ -1,7 +1,7 @@
 # LLM Question Generation
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/RoteeSaiMai/adaptive-quiz/blob/main/README.md)
-[![th](https://img.shields.io/badge/lang-th-blue.svg)](https://github.com/RoteeSaiMai/adaptive-quiz/blob/main/readme/README.th.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/RoteeSaiMai/question-gen-llm/blob/main/README.md)
+[![th](https://img.shields.io/badge/lang-th-blue.svg)](https://github.com/RoteeSaiMai/question-gen-llm/blob/main/readme/README.th.md)
 
 This project is an adaptive quiz system designed to dynamically generate and evaluate quiz content based on user interactions. The system is integrated with an API that processes user inputs and adjusts the difficulty of questions according to their performance.
 
