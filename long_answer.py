@@ -23,7 +23,7 @@ def generate_question_prompt_long(previous_questions, text):
     5. Evaluating: Justifying a decision or course of action (e.g., Judge, Critique, Recommend).
     6. Creating: Producing new or original work (e.g., Design, Assemble, Construct).
 
-    Always start the question with [score] encasing the score with square brackets. Make sure to phrase your question like a Thai native. Make sure the response only contains the question text and nothing else; don't even add a question number or any other comments.
+    Always start the question with [score][Taxonomy] encasing the score with square brackets.  (This should look something like [4][Remebering, Understanding, Analyzing, etc]) if multiple skills are present list them all. Make sure to phrase your question like a Thai native. Make sure the response only contains the question text and nothing else; don't even add a question number or any other comments.
     '''
 
     # Include previously asked questions if any
@@ -46,7 +46,9 @@ def evaluate_response_prompt_long(question, user_response, text):
 
     Do not give out marks unless answer is exactly correct. somthing like a close number or a tangentially related answer should still get 0.
     
-    โปรดจำคะแนน [score] จากคำถามและให้คำตอบมากที่สุดห้ามเกินเลขนี้ แป็นคะแนนเต็ม (ให้เป็นคะแนนเต็มที่เหมาะสมหากคำตอบสมบูรณ์ หรือให้คะแนนต่ำหากคำตอบไม่สมบูรณ์)
+    โปรดจำคะแนน [score] จากคำถามและให้คำตอบมากที่สุดห้ามเกินเลขนี้ แป็นคะแนนเต็ม 
+    Please base your evaluation on what extent the answer fullfills the Bloom Taxonomy skills present
+    (ให้เป็นคะแนนเต็มที่เหมาะสมหากคำตอบสมบูรณ์ หรือให้คะแนนต่ำหากคำตอบไม่สมบูรณ์)
     โปรดให้คำตอบที่ถูกต้องพร้อมเหตุผลที่ชัดเจนและเฉพาะเจาะจงสำหรับการประเมินนั้น คำตอบควรอยู่ในขอบเขตไม่เกิน 4 ประโยค และใช้ภาษาไทยที่เข้าใจง่ายเท่านั้น.
 
     สำหรับการประเมินคำตอบ ให้แบ่งคะแนนออกเป็นส่วนๆโดยให้คำอธิบายของแต่ละคะแนนโดยที่คะแนนเต็มมาจากเลขที่อยู่ในคำถาม
@@ -54,41 +56,52 @@ def evaluate_response_prompt_long(question, user_response, text):
     โปรดใช้รูปแบบการเริ่มต้นการประเมินดังนี้:
     - ระบุว่าคำตอบถูกต้องหรือผิด
     - อธิบายข้อผิดพลาดในคำตอบและให้คำตอบที่ถูกต้องพร้อมเหตุผล.
+    - ถ้าหากผิดให้ตัวอย่างคำตอบที่ถูก
     - กรุณาระบุคะแนนสำหรับแต่ละหัวข้อ เช่น ความรับผิดชอบและความโปร่งใส การจัดการข้อมูล และความถูกต้องโดยรวม
     - เขียนคะแนนเป็น JSON ที่มีเฉพาะคะแนนสุดท้ายและคะแนนย่อยที่ถูกระบุ
 
     The json file should only have one column named "total_score"
+    Example JSON:
+    {
+        "total_score" : 4
+    }
 
     Make sure that the score given is out of the amount of marks given in the question with the format [score].
 
     ให้คำตอบเป็นภาษาไทยเท่านั้นห้ามมีภาษาอื่น และให้คำตอบควรอยู่ในขอบเขตไม่เกิน 4 ประโยค
-    Write your response in Thai only. DONT' ANSWER IN ENGILISH WHAT DID I TELL YOU WHY ARE YOU ANSWERING IN ENGLISH I SAID DON'T ANSWER IN ENGLISH.
+    Write your response in Thai only. DONT' ANSWER IN ENGILISH WHAT DID I TELL YOU WHY ARE YOU ANSWERING IN ENGLISH I SAID DON'T ANSWER IN ENGLISH. Also make sure to provide the correct answer if it is wrong.
     '''
     return prompt
 
 def parse_evaluation_score(evaluation_text):
     """
     Parses the evaluation text to extract the score from the JSON format.
+    This version is more robust and can handle JSON embedded within text.
     """
-    # Extract JSON score using a more flexible approach
     try:
-        # Find the first occurrence of a JSON-like structure in the text
-        json_match = re.search(r'\{.*\}', evaluation_text, re.DOTALL)
-        if json_match:
-            score_json = json_match.group(0)
-            score_data = json.loads(score_json)
-            score = score_data.get("total_score", 0)
-            if isinstance(score, int):  # Ensure that the extracted score is an integer
-                return score
-            else:
-                print("Extracted score is not an integer:", score)
-                return 0
-        else:
-            print("No JSON score found in evaluation text.")
-            return 0
-    except (json.JSONDecodeError, AttributeError) as e:
+        # Find all JSON-like structures in the text
+        json_matches = re.findall(r'\{.*?\}', evaluation_text, re.DOTALL)
+
+        # Iterate through all potential JSON strings
+        for json_str in json_matches:
+            try:
+                # Attempt to parse the JSON
+                score_data = json.loads(json_str)
+                # Check if the required key exists and if the score is a number
+                if "total_score" in score_data and isinstance(score_data["total_score"], (int, float)):
+                    return score_data["total_score"]
+            except json.JSONDecodeError:
+                # If JSON decoding fails, continue to the next match
+                continue
+
+        # If no valid JSON was found, return 0
+        print("No valid JSON score found in evaluation text.")
+        return 0
+
+    except Exception as e:
         print(f"Error parsing JSON: {e}")
         return 0
+
 
 
 def ask_open_ended_questions(num_questions, initial_text):
